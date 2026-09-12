@@ -1,0 +1,6 @@
+{
+  "pythonVersion": "3.13",
+  "typeCheckingMode": "strict",
+  "include": ["."],
+  "exclude": ["static_cases/02_intentional_errors.py", "static_cases/03_protocol_demo.py"]
+}

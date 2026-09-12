@@ -1,0 +1,17 @@
+11_typing_advanced_study_complete validation
+================================
+
+Target/runtime used for validation: Python 3.13.5
+Tutorial files: 32
+Exercises: 64
+
+Validation performed:
+- All Python files compile successfully.
+- 32 tutorial files were executed individually successfully.
+- Blank exercise workbook: 0/64, FAIL=64, ERR=0.
+- Reference-answer copy: 64/64, FAIL=0, ERR=0.
+- static_cases/ intentionally includes files with static type errors and is not part of runtime pass criteria.
+
+Note:
+Pyright/mypy are optional third-party static analyzers and were not installed in the artifact runtime.
+The course includes example configuration files and STATIC_CHECKER_GUIDE.md for using either one locally.

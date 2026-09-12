@@ -102,7 +102,7 @@ python 99_exercises.py
 07_logging_debug_study/
 08_testing_study/
 stdlib_study/
-typing_advanced_study/
+11_typing_advanced_study_complete/
 performance_study/
 project_engineering_study/
 ```

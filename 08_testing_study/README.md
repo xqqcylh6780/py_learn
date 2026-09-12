@@ -171,7 +171,7 @@ python 99_exercises.py
 
 ```text
 stdlib_study
-typing_advanced_study
+11_typing_advanced_study_complete
 performance_study
 project_engineering_study
 ```
