@@ -101,8 +101,8 @@ python 99_exercises.py
 06_file_io_study/
 07_logging_debug_study/
 08_testing_study/
-stdlib_study/
+09_stdlib_study_complete/
 11_typing_advanced_study_complete/
 12_performance_study_complete/
-project_engineering_study/
+13_project_engineering_study_complete/
 ```

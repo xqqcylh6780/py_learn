@@ -17,3 +17,5 @@ print("\n演示当前线程栈：")
 faulthandler.dump_traceback(file=sys.stdout)
 
 print("不会在教程里故意 segfault。")
+print("生产环境应把输出写到可长期保存的文件描述符，并考虑多进程日志归属。")
+print("栈信息可能包含路径、函数名和业务上下文，收集与共享时仍需遵守敏感信息规则。")

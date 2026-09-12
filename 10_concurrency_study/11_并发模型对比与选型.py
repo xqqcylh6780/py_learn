@@ -10,10 +10,7 @@
 """
 
 import asyncio
-import multiprocessing
-import os
 import time
-from concurrent.futures import ThreadPoolExecutor
 
 
 def show(title):
@@ -21,18 +18,6 @@ def show(title):
     print("=" * 62)
     print(title)
     print("=" * 62)
-
-
-# ---- 三种模型各自的任务实现 ----
-
-def io_sync(name, seconds=0.1):
-    time.sleep(seconds)
-    return name
-
-
-async def io_async(name, seconds=0.1):
-    await asyncio.sleep(seconds)
-    return name
 
 
 def cpu_worker(n):
@@ -66,103 +51,50 @@ def part1_table():
 
 
 # ---------------------------------------------------------------
-# 2. IO 密集实测
+# 2. 把需求转换为选择条件
 # ---------------------------------------------------------------
-def part2_io_compare():
-    show("2. IO 密集：三种写法实测（8 个任务，每个 0.1 秒）")
-
-    N = 8
-
-    t0 = time.perf_counter()
-    for i in range(N):
-        io_sync(f"t{i}")
-    t_sync = time.perf_counter() - t0
-
-    t0 = time.perf_counter()
-    with ThreadPoolExecutor(max_workers=N) as pool:
-        list(pool.map(io_sync, [f"t{i}" for i in range(N)]))
-    t_thread = time.perf_counter() - t0
-
-    async def run_async():
-        return await asyncio.gather(*[io_async(f"t{i}") for i in range(N)])
-
-    t0 = time.perf_counter()
-    asyncio.run(run_async())
-    t_async = time.perf_counter() - t0
-
-    print(f"  串行         : {t_sync:.2f} 秒   (基准)")
-    print(f"  线程池       : {t_thread:.2f} 秒   ({t_sync / t_thread:.1f} 倍)")
-    print(f"  asyncio      : {t_async:.2f} 秒   ({t_sync / t_async:.1f} 倍)")
-    print()
-    print("  三者都快很多。选哪个？")
-    print("    - 任务数量少（几十个以内）、代码已经写好了 -> 线程池，改起来最省事")
-    print("    - 要开几千上万个（爬虫、网关）        -> asyncio，线程开不了那么多")
-    print("    - 依赖的库只有同步版本                -> 线程池")
+def choose_model(task_kind, library_style, needs_parallel_python=False):
+    """给出起点方案；实际项目仍要用目标负载验证。"""
+    if needs_parallel_python or task_kind == "cpu":
+        return "processes"
+    if library_style == "async":
+        return "asyncio"
+    return "threads"
 
 
-# ---------------------------------------------------------------
-# 3. CPU 密集实测
-# ---------------------------------------------------------------
-def part3_cpu_compare():
-    show("3. CPU 密集：只有进程有效")
+def part2_decision():
+    show("2. 从任务性质和依赖接口开始选择")
 
-    N = 4
-    WORK = 4_000_000
-
-    t0 = time.perf_counter()
-    serial_results = [cpu_worker(WORK) for _ in range(N)]
-    t_serial = time.perf_counter() - t0
-
-    t0 = time.perf_counter()
-    with ThreadPoolExecutor(max_workers=N) as pool:
-        thread_results = list(pool.map(cpu_worker, [WORK] * N))
-    t_thread = time.perf_counter() - t0
-
-    pool = multiprocessing.Pool(N)
-    t0 = time.perf_counter()
-    proc_results = pool.map(cpu_worker, [WORK] * N)
-    t_proc = time.perf_counter() - t0
-    pool.close()
-    pool.join()
-
-    print(f"  串行         : {t_serial:.2f} 秒   (基准)")
-    print(f"  线程池       : {t_thread:.2f} 秒   ({t_serial / t_thread:.2f} 倍)  <- 白忙")
-    print(f"  进程池       : {t_proc:.2f} 秒   ({t_serial / t_proc:.2f} 倍)")
-    print(f"  结果一致吗   : {serial_results == thread_results == proc_results}")
-    print()
-    print("  线程池这一栏基本在 1.0 附近晃 —— 这就是 GIL 的代价。")
-    print("  asyncio 更没用，连测都不用测：它是单线程的。")
-
-
-# ---------------------------------------------------------------
-# 4. 决策流程
-# ---------------------------------------------------------------
-def part4_decision():
-    show("4. 拿到需求，按这个顺序问自己")
-
-    steps = [
-        "第 1 问：任务是「等」为主还是「算」为主？",
-        "       算为主（CPU 密集） -> 直接上「进程池」，后面的都不用问了",
-        "       等为主（IO 密集）   -> 继续第 2 问",
-        "",
-        "第 2 问：并发量大概多大？",
-        "       几十个以内          -> 线程池，最简单",
-        "       几百以上            -> asyncio",
-        "",
-        "第 3 问：依赖的库是同步还是异步？",
-        "       有成熟的异步库       -> asyncio",
-        "       只有同步库           -> 线程池（或在协程里用 to_thread 包一层）",
-        "",
-        "第 4 问：有没有需要共享的可变状态？",
-        "       有                   -> 优先用队列传，别用共享变量加锁",
-        "       没有                 -> 随便选，这时候选你团队最熟的",
+    scenarios = [
+        ("同步 HTTP 客户端", "io", "sync", False),
+        ("异步数据库驱动", "io", "async", False),
+        ("纯 Python 图像计算", "cpu", "sync", True),
     ]
-    for line in steps:
-        print("  " + line)
+    for name, task_kind, library_style, parallel in scenarios:
+        model = choose_model(task_kind, library_style, parallel)
+        print(f"  {name:<20} -> {model}")
 
     print()
-    print("  一个反过来的建议：如果三种都能用，就选最简单的那个。")
-    print("  并发代码的调试成本很高，别为了「技术上更优雅」给自己挖坑。")
+    print("  并发数量不是固定分界线。文件描述符、内存、下游限流、任务时长都会改变选择。")
+    print("  先用最简单的可行模型，再用真实负载测吞吐、尾延迟和资源占用。")
+
+
+# ---------------------------------------------------------------
+# 3. 运行约束
+# ---------------------------------------------------------------
+def part3_constraints():
+    show("3. 模型选定后仍要回答的运行问题")
+
+    for question in [
+        "任务怎样取消，超时后底层工作是否仍在运行？",
+        "输入能否序列化，传输成本会不会淹没计算收益？",
+        "谁限制并发，怎样避免压垮数据库或远端接口？",
+        "异常在哪里汇总，后台任务失败是否可见？",
+        "关闭时怎样停止接收、等待在途任务并释放资源？",
+    ]:
+        print("  -", question)
+
+    print("\n  选型只决定执行模型；背压、超时、错误传播和关闭协议决定系统能否稳定运行。")
 
 
 # ---------------------------------------------------------------
@@ -206,9 +138,8 @@ def part5_hybrid():
 
 def main():
     part1_table()
-    part2_io_compare()
-    part3_cpu_compare()
-    part4_decision()
+    part2_decision()
+    part3_constraints()
     part5_hybrid()
 
     show("练习：去 99_exercises.py 做 ex17")

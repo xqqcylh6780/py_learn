@@ -4,6 +4,11 @@
 Python 3.9+ 优先 list[int] / dict[str, int]；3.10+ 优先 X | Y；
 Python 3.12+ 支持 PEP 695 的 type 语句和类型参数列表。
 """
+# 学习重点：现代语法让类型关系更直接，但最低 Python 版本决定能否解析。
+# - list[int] 是参数化泛型，X | Y 是联合类型。
+# - get_origin() 可取得外层容器，get_args() 可取得内部类型参数。
+# - 库代码升级语法前要先确认用户环境和类型检查器版本。
+# 常见误区：认为参数化注解能直接用于所有 isinstance() 检查。
 from typing import get_args, get_origin
 
 T1 = list[int]

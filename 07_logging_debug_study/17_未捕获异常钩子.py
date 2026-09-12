@@ -17,3 +17,5 @@ print("已临时安装 custom_excepthook（教程结束前恢复）")
 sys.excepthook = old
 
 print("\n服务框架通常已有自己的顶层异常处理，不要无脑覆盖全局 hook。")
+print("hook 只处理到达对应边界的未捕获异常；已经被 except 捕获的异常不会再次出现。")
+print("低级崩溃、强制终止和部分子进程故障还需要 faulthandler、进程监控或平台日志。")

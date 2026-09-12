@@ -11,6 +11,7 @@
 import asyncio
 import multiprocessing
 import queue
+import signal
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -222,7 +223,42 @@ def part10_thread_pool_size():
 
 
 # ---------------------------------------------------------------
-def part11_summary():
+def part11_graceful_shutdown():
+    show("坑 11：收到停止信号就立刻退出")
+
+    stopping = threading.Event()
+
+    def request_stop(signum, _frame):
+        print(f"  收到信号 {signum}：停止接收新任务")
+        stopping.set()
+
+    # 教程不真正发送系统信号，用一次模拟调用展示状态转换。
+    request_stop(getattr(signal, "SIGTERM", signal.SIGINT), None)
+    assert stopping.is_set()
+
+    print("  正确关闭顺序：停止接收 -> 通知任务 -> 等待在途工作 -> 关闭池/队列/连接。")
+    print("  signal.signal(...) 只能在主线程注册；Windows 服务还要遵循服务管理器的停止协议。")
+    print("  超时后是否强制终止要由应用明确决定，不能让重要写入做到一半。")
+
+
+# ---------------------------------------------------------------
+def part12_backpressure():
+    show("坑 12：生产速度失控，没有背压")
+
+    bounded = queue.Queue(maxsize=2)
+    bounded.put_nowait("task-1")
+    bounded.put_nowait("task-2")
+    try:
+        bounded.put_nowait("task-3")
+    except queue.Full:
+        print("  有界队列已满：生产者必须等待、拒绝或降级，不能无限堆积。")
+
+    print("  无界队列在消费者变慢时会持续占用内存，并把真正故障推迟成内存事故。")
+    print("  背压策略要明确：阻塞多久、是否丢弃、谁重试，以及怎样记录拒绝数量。")
+
+
+# ---------------------------------------------------------------
+def part13_summary():
     show("总结：排错速查表")
 
     rows = [
@@ -234,6 +270,8 @@ def part11_summary():
         ("一运行开满进程", "缺 if __name__ 守卫", "把入口放进 main()"),
         ("多进程报 pickle 错", "传了 lambda/嵌套函数", "函数提到模块顶层"),
         ("日志少了几条", "daemon 被强杀", "别用 daemon 做重要的事"),
+        ("部署停止时数据损坏", "没有优雅关闭协议", "先停流量，再等待在途任务"),
+        ("内存持续上涨", "生产快于消费且队列无界", "限制队列并设计背压策略"),
     ]
     print(f"  {'现象':<26}{'原因':<30}怎么查")
     print("  " + "-" * 80)
@@ -252,7 +290,9 @@ def main():
     part8_pickle()
     part9_main_guard()
     part10_thread_pool_size()
-    part11_summary()
+    part11_graceful_shutdown()
+    part12_backpressure()
+    part13_summary()
 
     show("练习：去 99_exercises.py 做 ex18")
 

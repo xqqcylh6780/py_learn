@@ -7,7 +7,7 @@ Python 学习笔记。每个主题一个独立目录，里面是**可以跑的�
 
 | 目录 | 主题 | 讲解 | 练习 |
 |---|---|---:|---:|
-| [`01_python_core_study/`](01_python_core_study/) | Python 核心语法与语言语义 | 15 节 | 30 题 |
+| [`01_python_core_study/`](01_python_core_study/) | Python 核心语法与语言语义 | 23 节 | 52 题 |
 | [`02_collections_study/`](02_collections_study/) | collections 容器模块 | 5 节 | 13 题 |
 | [`03_oop_study/`](03_oop_study/) | 面向对象（类、对象、元类） | 20 节 | 30 题 |
 | [`04_exception_study/`](04_exception_study/) | 异常处理与错误设计 | 20 节 | 44 题 |
@@ -18,9 +18,10 @@ Python 学习笔记。每个主题一个独立目录，里面是**可以跑的�
 | [`09_stdlib_study_complete/`](09_stdlib_study_complete/) | 高频 Python 标准库 | 32 节 | 64 题 |
 | [`10_concurrency_study/`](10_concurrency_study/) | 并发（线程、进程、协程） | 12 节 | 18 题 |
 | [`11_typing_advanced_study_complete/`](11_typing_advanced_study_complete/) | Python 类型系统进阶 | 32 节 | 64 题 |
-| [`12_performance_study_complete/`](12_performance_study_complete/) | 性能分析与优化 | 30 节 | 60 题 |
+| [`12_performance_study_complete/`](12_performance_study_complete/) | 性能分析与优化 | 10 章 | 60 题 |
+| [`13_project_engineering_study_complete/`](13_project_engineering_study_complete/) | Python 项目工程化与交付 | 32 节 | 64 题 |
 
-合计 **276 个讲解文件 + 545 道练习题**。
+合计 **296 个讲解文件 + 631 道练习题**。
 
 ## 建议学习顺序
 
@@ -48,9 +49,11 @@ Python 学习笔记。每个主题一个独立目录，里面是**可以跑的�
 11_typing_advanced_study_complete
         ↓
 12_performance_study_complete
+        ↓
+13_project_engineering_study_complete
 ```
 
-从核心语言语义开始，依次补齐对象模型、错误处理、工程基础和标准库，再进入并发。
+从核心语言语义开始，依次补齐对象模型、错误处理、标准库、并发、类型与性能，最后学习完整项目交付。
 
 ## 怎么用
 
@@ -125,6 +128,10 @@ python 99_exercises.py
 
 性能测量、热点定位、内存分析、缓存与优化回归测试。
 
+### 13_project_engineering_study_complete
+
+虚拟环境、依赖复现、项目元数据、CLI、构建产物、CI、发布安全与跨平台部署。
+
 ## 环境
 
 - 推荐 Python 3.13
@@ -136,12 +143,4 @@ python 99_exercises.py
 
 ```powershell
 python -X utf8 01_对象引用与身份.py
-```
-
-## 后续方向
-
-下一阶段可继续增加：
-
-```text
-13_project_engineering_study/
 ```

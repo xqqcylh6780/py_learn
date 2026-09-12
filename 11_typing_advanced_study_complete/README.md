@@ -56,6 +56,9 @@ python 99_exercises.py
 
 每节后做对应练习。练习册初始应为 `0/64`。
 
+每个 `.py` 文件都包含四层信息：概念解决的问题、静态检查器如何理解、运行时边界、
+常见误区。先阅读文件顶部说明，再运行示例；涉及纯静态行为的章节还要配合下文的检查器命令。
+
 ## 一个很重要的区别
 
 这套课程同时涉及两种世界：
@@ -68,8 +71,17 @@ Python runtime                 static type checker
 isinstance 等运行时行为          Protocol/variance/overload 等静态规则
 ```
 
-所以仅运行 `.py` 无法验证所有类型知识。`static_cases/` 中专门放了供 pyright/mypy 检查的例子，
-其中 `02_intentional_errors.py`、`03_protocol_demo.py` 故意包含静态错误。
+所以仅运行 `.py` 无法验证所有类型知识。`static_cases/` 中专门放了供 pyright/mypy 检查的例子：
+
+- `01_good_generic.py`：泛型返回类型推导
+- `02_intentional_errors.py`：Final 与基本赋值错误
+- `03_protocol_demo.py`：Protocol 成员签名
+- `04_variance_cases.py`：协变接口与可变容器不变性
+- `05_typeddict_contracts.py`：必需键、多余键和 ReadOnly
+- `06_paramspec_and_overload.py`：装饰器签名与重载返回类型
+- `07_narrowing_and_never.py`：TypeIs 双向缩窄与穷尽检查
+
+带有 `expected type-check error` 的行是故意写错的，用于确认检查器确实报告相应契约错误。
 
 ## 推荐检查器
 

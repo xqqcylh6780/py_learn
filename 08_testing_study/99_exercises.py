@@ -910,7 +910,7 @@ if __name__ == "__main__":
 # consumer = types.ModuleType("_ex15_consumer")
 # exec(textwrap.dedent("""
 # from _ex15_src import rate
-# 
+#
 # def price(x):
 #     return x*(1+rate())
 # """), consumer.__dict__)

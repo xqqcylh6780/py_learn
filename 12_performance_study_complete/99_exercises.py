@@ -7,17 +7,21 @@ def check(fn):
 
 @check
 def ex01_metric_tuple():
-    """返回性能指标的三个常见维度。"""
+    """根据观测名称提取延迟、吞吐和内存指标。"""
     # TODO_01
-    result = None
-    assert result == ('latency','throughput','memory')
+    def selected_metrics(observations):
+        pass
+    assert selected_metrics({'latency': 0.2, 'errors': 1, 'memory': 64}) == ('latency', 'memory')
+    assert selected_metrics({'throughput': 200}) == ('throughput',)
 
 @check
 def ex02_workflow():
-    """补全性能优化顺序。"""
+    """验证测量、定位、修改、复测的先后关系。"""
     # TODO_02
-    result = None
-    assert result == ['baseline','profile','optimize','remeasure']
+    def valid_workflow(steps):
+        pass
+    assert valid_workflow(['baseline', 'profile', 'optimize', 'remeasure']) is True
+    assert valid_workflow(['optimize', 'baseline', 'remeasure']) is False
 
 @check
 def ex03_set_lookup():
@@ -236,10 +240,13 @@ def ex28_bytecode_spec():
 
 @check
 def ex29_call_hotspot():
-    """函数调用微优化是否应先确认热点。"""
+    """只有热点占比和调用规模都足够时才考虑调用级微优化。"""
     # TODO_29
-    result = None
-    assert result is True
+    def worth_micro_optimizing(profile_share, calls):
+        pass
+    assert worth_micro_optimizing(0.45, 2_000_000) is True
+    assert worth_micro_optimizing(0.01, 2_000_000) is False
+    assert worth_micro_optimizing(0.45, 20) is False
 
 @check
 def ex30_abstraction_tradeoff():
@@ -274,10 +281,12 @@ def ex33_join():
 
 @check
 def ex34_plus_rule():
-    """少量字符串拼接能否正常使用 +。"""
+    """根据片段数量选择直接拼接或 join。"""
     # TODO_34
-    result = None
-    assert result is True
+    def combine(parts):
+        pass
+    assert combine(['a', 'b']) == 'ab'
+    assert combine(['a', 'b', 'c', 'd']) == 'abcd'
 
 @check
 def ex35_generator():
@@ -303,10 +312,13 @@ def ex37_local_alias():
 
 @check
 def ex38_lookup_measure():
-    """局部别名一定更快是否可当永恒规则。"""
+    """只有测量结果超过噪声区间时才接受局部改写。"""
     # TODO_38
-    result = None
-    assert result is False
+    def meaningful_improvement(before, after, noise_ratio=0.03):
+        pass
+    assert meaningful_improvement(1.0, 0.8) is True
+    assert meaningful_improvement(1.0, 0.99) is False
+    assert meaningful_improvement(1.0, 1.1) is False
 
 @check
 def ex39_lru_cache():
@@ -338,10 +350,13 @@ def ex41_slots():
 
 @check
 def ex42_slots_rule():
-    """slots 是否保证固定百分比提速。"""
+    """根据实例规模和动态属性需求判断 slots 是否值得评估。"""
     # TODO_42
-    result = None
-    assert result is False
+    def slots_candidate(instance_count, needs_dynamic_attributes):
+        pass
+    assert slots_candidate(1_000_000, False) is True
+    assert slots_candidate(10, False) is False
+    assert slots_candidate(1_000_000, True) is False
 
 @check
 def ex43_list_comp():
@@ -367,10 +382,13 @@ def ex45_stringio():
 
 @check
 def ex46_batching():
-    """I/O 批量处理通常减少哪类成本。"""
+    """计算批处理后的往返次数。"""
     # TODO_46
-    result = None
-    assert result == 'round_trips'
+    def round_trips(item_count, batch_size):
+        pass
+    assert round_trips(100, 20) == 5
+    assert round_trips(101, 20) == 6
+    assert round_trips(0, 20) == 0
 
 @check
 def ex47_pickle_size():
@@ -383,17 +401,23 @@ def ex47_pickle_size():
 
 @check
 def ex48_serialization_tradeoff():
-    """序列化格式选型是否只能看速度。"""
+    """根据互操作和输入信任边界选择示例格式。"""
     # TODO_48
-    result = None
-    assert result is False
+    def choose_format(cross_language, trusted_python_only):
+        pass
+    assert choose_format(True, False) == 'json'
+    assert choose_format(False, True) == 'pickle'
+    assert choose_format(False, False) == 'json'
 
 @check
 def ex49_cpu_strategy():
-    """传统 GIL CPython 下纯 Python CPU 密集常用哪种并行策略。"""
+    """按任务性质选择并发模型的起点。"""
     # TODO_49
-    result = None
-    assert result == 'processes'
+    def strategy(task_kind, async_library=False):
+        pass
+    assert strategy('cpu') == 'processes'
+    assert strategy('io', async_library=True) == 'asyncio'
+    assert strategy('io', async_library=False) == 'threads'
 
 @check
 def ex50_io_strategy():
@@ -413,10 +437,12 @@ def ex51_pickle_payload():
 
 @check
 def ex52_task_granularity():
-    """进程池任务过小可能被调度/IPC成本淹没。"""
+    """比较计算收益与调度、序列化成本。"""
     # TODO_52
-    result = None
-    assert result is True
+    def worth_process_pool(compute_ms, overhead_ms):
+        pass
+    assert worth_process_pool(500, 20) is True
+    assert worth_process_pool(5, 20) is False
 
 @check
 def ex53_gather():
@@ -449,10 +475,12 @@ def ex55_median_regression():
 
 @check
 def ex56_ci_noise():
-    """性能 CI 是否应依赖一次单样本绝对值。"""
+    """用中位数和容忍比例判断性能回归。"""
     # TODO_56
-    result = None
-    assert result is False
+    def regressed(baseline, current, tolerance=0.10):
+        pass
+    assert regressed([1.0, 1.1, 0.9], [1.3, 1.2, 1.4]) is True
+    assert regressed([1.0, 1.1, 0.9], [1.02, 1.05, 0.98]) is False
 
 @check
 def ex57_snapshot_diff():
@@ -465,10 +493,12 @@ def ex57_snapshot_diff():
 
 @check
 def ex58_leak_first_question():
-    """内存增长排查首先要确认对象是否仍被引用。"""
+    """区分稳定缓存与持续增长的保留对象。"""
     # TODO_58
-    result = None
-    assert result is True
+    def keeps_growing(samples):
+        pass
+    assert keeps_growing([100, 120, 140, 160]) is True
+    assert keeps_growing([100, 140, 138, 141]) is False
 
 @check
 def ex59_priority():
@@ -479,10 +509,13 @@ def ex59_priority():
 
 @check
 def ex60_remeasure():
-    """优化后必须做什么。"""
+    """复测改善并同时检查行为测试。"""
     # TODO_60
-    result = None
-    assert result == 'remeasure'
+    def optimization_accepted(baseline, current, tests_pass):
+        pass
+    assert optimization_accepted(10.0, 7.0, True) is True
+    assert optimization_accepted(10.0, 7.0, False) is False
+    assert optimization_accepted(10.0, 10.5, True) is False
 
 def run_all():
     passed=0; errs=0
@@ -508,10 +541,10 @@ if __name__ == '__main__':
 
 # ====================== 参考答案 ======================
 # TODO_01
-# result = ('latency','throughput','memory')
+# return tuple(name for name in ('latency','throughput','memory') if name in observations)
 #
 # TODO_02
-# result = ['baseline','profile','optimize','remeasure']
+# return steps == ['baseline','profile','optimize','remeasure']
 #
 # TODO_03
 # lookup = set(xs)
@@ -592,7 +625,7 @@ if __name__ == '__main__':
 # result = False
 #
 # TODO_29
-# result = True
+# return profile_share >= 0.10 and calls >= 10_000
 #
 # TODO_30
 # result = 'maintainability'
@@ -607,7 +640,7 @@ if __name__ == '__main__':
 # result = ''.join(parts)
 #
 # TODO_34
-# result = True
+# return parts[0] + parts[1] if len(parts) == 2 else ''.join(parts)
 #
 # TODO_35
 # g = (x*x for x in range(3))
@@ -619,7 +652,7 @@ if __name__ == '__main__':
 # sqrt = math.sqrt
 #
 # TODO_38
-# result = False
+# return after < before * (1 - noise_ratio)
 #
 # TODO_39
 # cached = lru_cache(maxsize=8)(f)
@@ -632,7 +665,7 @@ if __name__ == '__main__':
 #         __slots__ = ('x',)
 #
 # TODO_42
-# result = False
+# return instance_count >= 10_000 and not needs_dynamic_attributes
 #
 # TODO_43
 # result = [x*x for x in range(4)]
@@ -644,16 +677,18 @@ if __name__ == '__main__':
 # buf = io.StringIO()
 #
 # TODO_46
-# result = 'round_trips'
+# if batch_size <= 0: raise ValueError('batch_size must be positive')
+# return (item_count + batch_size - 1) // batch_size
 #
 # TODO_47
 # result = len(pickle.dumps(obj))
 #
 # TODO_48
-# result = False
+# return 'pickle' if trusted_python_only and not cross_language else 'json'
 #
 # TODO_49
-# result = 'processes'
+# if task_kind == 'cpu': return 'processes'
+# return 'asyncio' if async_library else 'threads'
 #
 # TODO_50
 # result = True
@@ -662,7 +697,7 @@ if __name__ == '__main__':
 # blob = pickle.dumps(x)
 #
 # TODO_52
-# result = True
+# return compute_ms > overhead_ms
 #
 # TODO_53
 # async def run():
@@ -676,17 +711,18 @@ if __name__ == '__main__':
 # result = statistics.median(b) > statistics.median(a)
 #
 # TODO_56
-# result = False
+# import statistics
+# return statistics.median(current) > statistics.median(baseline) * (1 + tolerance)
 #
 # TODO_57
 # result = b.compare_to(a, 'lineno')
 #
 # TODO_58
-# result = True
+# return len(samples) >= 3 and all(b > a for a, b in zip(samples, samples[1:]))
 #
 # TODO_59
 # result = 'algorithm/data-structure'
 #
 # TODO_60
-# result = 'remeasure'
+# return tests_pass and current < baseline
 #

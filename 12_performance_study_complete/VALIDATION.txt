@@ -1,10 +1,11 @@
 12_performance_study_complete validation
-Python: 3.13.5
-Lesson files: 30
-Lesson execution: PASS (30/30)
+Python: 3.13.12
+Lesson files: 10
+Lesson execution: PASS (10/10)
 Syntax compile: PASS
 Blank exercise: 0/60; ERR=0
 Solved exercise: 60/60; ERR=0
+Multi-input exercise upgrades: PASS (13/13)
 
 Notes:
 - Course targets CPython/Python 3.13 semantics where implementation details matter.

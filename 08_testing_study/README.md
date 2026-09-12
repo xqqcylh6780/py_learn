@@ -170,10 +170,10 @@ python 99_exercises.py
 后面可以继续：
 
 ```text
-stdlib_study
+09_stdlib_study_complete
 11_typing_advanced_study_complete
 12_performance_study_complete
-project_engineering_study
+13_project_engineering_study_complete
 ```
 
-其中 `project_engineering_study` 再把 pytest、coverage、CI、pyproject.toml、打包发布等真正接进完整项目。
+其中 `13_project_engineering_study_complete` 再把 pytest、coverage、CI、pyproject.toml、打包发布等真正接进完整项目。
