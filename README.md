@@ -18,8 +18,9 @@ Python 学习笔记。每个主题一个独立目录，里面是**可以跑的�
 | [`09_stdlib_study_complete/`](09_stdlib_study_complete/) | 高频 Python 标准库 | 32 节 | 64 题 |
 | [`10_concurrency_study/`](10_concurrency_study/) | 并发（线程、进程、协程） | 12 节 | 18 题 |
 | [`11_typing_advanced_study_complete/`](11_typing_advanced_study_complete/) | Python 类型系统进阶 | 32 节 | 64 题 |
+| [`12_performance_study_complete/`](12_performance_study_complete/) | 性能分析与优化 | 30 节 | 60 题 |
 
-合计 **246 个讲解文件 + 485 道练习题**。
+合计 **276 个讲解文件 + 545 道练习题**。
 
 ## 建议学习顺序
 
@@ -45,6 +46,8 @@ Python 学习笔记。每个主题一个独立目录，里面是**可以跑的�
 10_concurrency_study
         ↓
 11_typing_advanced_study_complete
+        ↓
+12_performance_study_complete
 ```
 
 从核心语言语义开始，依次补齐对象模型、错误处理、工程基础和标准库，再进入并发。
@@ -118,6 +121,10 @@ python 99_exercises.py
 
 现代类型注解、泛型、Protocol、TypedDict、类型缩窄与静态检查工程实践。
 
+### 12_performance_study_complete
+
+性能测量、热点定位、内存分析、缓存与优化回归测试。
+
 ## 环境
 
 - 推荐 Python 3.13
@@ -136,6 +143,5 @@ python -X utf8 01_对象引用与身份.py
 下一阶段可继续增加：
 
 ```text
-12_performance_study/
 13_project_engineering_study/
 ```
