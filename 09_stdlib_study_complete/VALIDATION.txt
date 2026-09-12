@@ -1,0 +1,18 @@
+stdlib_study validation
+=======================
+
+Target: Python 3.13
+
+Tutorial files: 32
+Exercises: 64
+
+Checks performed:
+- All Python files compile successfully.
+- Tutorial 01-21 were executed individually and exited successfully.
+- Tutorial 22-32 were executed individually and exited successfully.
+- Blank exercise workbook: 0/64, FAIL=64, ERR=0.
+- Reference-answer validation copy: 64/64, FAIL=0, ERR=0.
+- __pycache__ removed before packaging.
+
+通过 0/64  FAIL=64  ERR=0
+通过 64/64  FAIL=0  ERR=0
