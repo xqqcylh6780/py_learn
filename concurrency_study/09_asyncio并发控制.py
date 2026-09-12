@@ -205,8 +205,8 @@ async def part6_queue():
     print(f"    处理了 {len(consumed)} 项: {consumed}")
     print()
     print("  和线程队列用法几乎一样，只是 put/get 前要加 await。")
-    print("  因为 await 会主动让出，所以完全不需要锁。")
-    print("  这是协程相比线程最舒服的地方：并发结构清楚了，同步问题自然就少。")
+    print("  队列本身帮你管好了缓冲，所以这个例子里不需要额外加锁。")
+    print("  但协程并非没有竞态：共享可变状态、且读写之间存在 await 时，仍要自己同步。")
 
 
 async def main():

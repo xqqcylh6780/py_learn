@@ -108,7 +108,7 @@ with Swallow():
 
 print("   程序继续往下走了，说明异常真的被吞了")
 print()
-print("这个能力要小心用：不返回 False 的上下文管理器会悄悄吃掉 bug。")
+print("这个能力要小心用：__exit__ 返回真值时会抑制异常；返回 False 或 None 都会继续向外抛。")
 
 
 # ---------------------------------------------------------------
@@ -120,8 +120,10 @@ show("5. @contextmanager —— 不用写类了")
 @contextmanager
 def tag(name):
     print(f"   <{name}>")
-    yield                               # 这里就是 with 块的内容
-    print(f"   </{name}>")
+    try:
+        yield                           # 这里就是 with 块的内容
+    finally:
+        print(f"   </{name}>")           # 即使 with 块抛异常也保证收尾
 
 
 with tag("div"):

@@ -37,7 +37,7 @@ def part1_race():
     print("  解法：with lock，或者干脆用 queue 传数据")
     print()
     print("  完整实测见 03 节。重点记住这句：")
-    print("  有 GIL ≠ 线程安全。GIL 只保证单条字节码不被打断。")
+    print("  有 GIL ≠ 线程安全。不要把某些 CPython 操作当前看起来原子，当成语言级同步保证。")
 
 
 # ---------------------------------------------------------------
@@ -151,8 +151,8 @@ def part7_blocking_in_async():
             gaps.append(now - last)
             last = now
 
-    async def blocking_call():
-        time.sleep(0.2)                 # 同步阻塞，会卡死整个循环
+    def blocking_call():
+        time.sleep(0.2)                 # 同步阻塞函数；直接在协程里调用会卡死整个循环
         return "done"
 
     async def demo(use_thread):
@@ -160,7 +160,9 @@ def part7_blocking_in_async():
         if use_thread:
             await asyncio.gather(heartbeat(gaps), asyncio.to_thread(blocking_call))
         else:
-            await asyncio.gather(heartbeat(gaps), blocking_call())
+            async def call_blocking_directly():
+                return blocking_call()
+            await asyncio.gather(heartbeat(gaps), call_blocking_directly())
         return max(gaps)
 
     gap_bad = asyncio.run(demo(use_thread=False))
@@ -213,7 +215,7 @@ def part10_thread_pool_size():
     print("  CPU 密集：开成核数的几倍，只会互相抢 GIL，切换开销反而拖慢。")
     print("  IO  密集：可以开大，但要看下游承受能力 ——")
     print("            你开 500 个线程打对方接口，大概率被封 IP。")
-    print("            而且线程多了，内存（每个约 8MB 栈）也吃不消。")
+    print("            而且每个线程都有独立栈空间，线程多了内存也吃不消。")
     print()
     print("  正确做法：从一个保守值开始（IO 密集 20~50），")
     print("  压测加观察，慢慢往上调，别一上来就 1000。")

@@ -50,7 +50,7 @@ print("等于普通元组吗:", p == ("张三", 28, "北京"))
 print("长度        :", len(p))
 print("下标切片    :", p[1:])
 
-# 不可变 + 可哈希 -> 能当字典的键
+# namedtuple 本身不可变；当所有字段值都可哈希时，实例也可哈希，能当字典键
 ages = {Person("李四", 30, "上海"): "VIP"}
 print("当字典键    :", ages[Person("李四", 30, "上海")])
 
@@ -121,7 +121,7 @@ print("对比一下用字典写的 it['name']，namedtuple 的 it.name 更短也
 # ---------------------------------------------------------------
 show("5. namedtuple 还是 dataclass？")
 
-print("namedtuple：不可变、轻量、省内存、能解包、能当字典键")
+print("namedtuple：不可变、轻量、能解包；字段都可哈希时能当字典键")
 print("           适合「一条记录」这种用完就不改的数据")
 print()
 print("dataclass ：可变、能写方法、支持继承、字段类型清晰")

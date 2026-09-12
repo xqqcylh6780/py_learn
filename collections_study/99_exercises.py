@@ -246,34 +246,32 @@ if __name__ == "__main__":
 # =================================================================
 """
 ex1_top_words
-    return [w for w, _ in Counter(words).most_common(2)]
+    result = [w for w, _ in Counter(words).most_common(2)]
 
 ex2_is_anagram
     norm = lambda s: s.replace(" ", "").lower()
     return Counter(norm(s1)) == Counter(norm(s2))
 
 ex3_common_items
-    return dict(Counter(a) & Counter(b))
+    result = dict(Counter(a) & Counter(b))
 
 ex4_group_by_first_letter
     result = defaultdict(list)
     for w in words:
         result[w[0]].append(w)
-    return result
 
 ex5_inverted_index
-    index = defaultdict(set)
+    result = defaultdict(set)
     for i, line in enumerate(lines, start=1):
         for word in line.split():
-            index[word].add(i)
-    return index
+            result[word].add(i)
 
 ex6_degree
     deg = defaultdict(int)
     for u, v in edges:
         deg[u] += 1
         deg[v] += 1
-    return dict(deg)
+    result = dict(deg)
 
 ex7_recent
     return list(deque(items, maxlen=n))
@@ -305,7 +303,6 @@ ex10_distance
 ex11_replace_and_dict
     new_movie = m._replace(year=2011)
     movie_dict = new_movie._asdict()
-    return new_movie, movie_dict
 
 ex12_lru
     def get(self, key):

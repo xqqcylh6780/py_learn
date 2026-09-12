@@ -51,7 +51,7 @@ def part1_table():
     rows = [
         ("线程 threading", "并发", "是", "是（有 GIL）", "中", "IO 密集"),
         ("进程 multiprocessing", "并行", "否", "否", "高", "CPU 密集"),
-        ("协程 asyncio", "并发", "是", "否", "极低", "高并发 IO"),
+        ("协程 asyncio", "并发", "是", "视共享状态而定", "极低", "高并发 IO"),
     ]
     print(f"  {'模型':<22}{'类型':<8}{'共享内存':<10}{'需要锁':<14}{'开销':<8}擅长")
     print("  " + "-" * 78)
@@ -61,7 +61,7 @@ def part1_table():
     print()
     print("  几点补充说明：")
     print("    - 线程「需要锁」那一栏：因为共享内存，只要涉及写就得加锁")
-    print("    - 协程不需要锁：同一时刻只有一个协程在跑，切换点都是你自己写的 await")
+    print("    - 协程共享可变状态时仍可能需要 asyncio.Lock 等同步手段；尤其是读写之间存在 await 时")
     print("    - 进程的锁是另一回事：它靠队列/共享内存的锁，不是 threading.Lock")
 
 
@@ -172,7 +172,7 @@ def part5_hybrid():
     show("5. 混合使用：协程调度 + 线程池干重活")
 
     print("  真实场景：一个异步服务，偶尔要跑 CPU 密集的任务。")
-    print("  做法：协程负责并发调度，重活丢给线程池/进程池。")
+    print("  做法：协程负责并发调度；同步阻塞 IO 可丢线程池，真正 CPU 密集计算通常丢进程池。")
     print()
 
     async def handle_request(name):
@@ -180,7 +180,7 @@ def part5_hybrid():
         await asyncio.sleep(0.05)
         data = f"{name} 的数据"
 
-        # 第二步：CPU 密集的重活，丢到线程池，不卡事件循环
+        # 第二步：这里只演示把一小段同步计算移出事件循环；线程池能避免卡 loop，但不会绕过传统 GIL 获得纯 Python CPU 并行
         loop = asyncio.get_running_loop()
         processed = await loop.run_in_executor(None, cpu_worker, 500_000)
 
@@ -195,8 +195,8 @@ def part5_hybrid():
     print(f"    处理了 {len(results)} 个请求，耗时 {elapsed:.2f} 秒")
     print(f"    第一个结果: {results[0]}")
     print()
-    print("  注意：这里用的是线程池不是进程池。因为任务是「每个都很小」，")
-    print("  开进程的 60 毫秒开销比计算本身还贵。任务大才换进程池。")
+    print("  注意：这里用线程池的目的只是避免阻塞事件循环，不是让纯 Python CPU 计算并行。")
+    print("  真正重的 CPU 任务通常应使用 ProcessPoolExecutor；小任务则要权衡进程调度/序列化开销。")
     print()
     print("  真实的分工长这样：")
     print("    asyncio       管网络、管调度、管超时重试")

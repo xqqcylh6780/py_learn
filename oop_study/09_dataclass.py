@@ -90,7 +90,7 @@ print("dataclass 干脆直接报错，逼你用 default_factory。")
 # ---------------------------------------------------------------
 # 3. frozen：不可变 + 可哈希
 # ---------------------------------------------------------------
-show("3. frozen=True —— 变成不可变、可哈希")
+show("3. frozen=True —— 禁止字段赋值，并通常生成哈希")
 
 
 @dataclass(frozen=True)
@@ -107,8 +107,8 @@ try:
 except Exception as ex:
     print("改字段 :", type(ex).__name__, "-", ex)
 
-print("能放进集合去重:", {Point(1, 2), Point(1, 2), Point(3, 4)})
-print("能当字典键    :", {Point(1, 2): "起点"}[Point(1, 2)])
+print("字段值都可哈希时，能放进集合去重:", {Point(1, 2), Point(1, 2), Point(3, 4)})
+print("字段值都可哈希时，能当字典键:", {Point(1, 2): "起点"}[Point(1, 2)])
 print()
 print("对比：默认的 dataclass 因为有 __eq__ 没 __hash__，是不可哈希的。")
 

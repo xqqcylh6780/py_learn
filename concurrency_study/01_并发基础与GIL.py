@@ -142,7 +142,7 @@ def part4_gil():
 
     print("GIL = Global Interpreter Lock（全局解释器锁）")
     print()
-    print("规则很简单：任何一个时刻，只有一个线程能执行 Python 字节码。")
+    print("在传统的、启用 GIL 的 CPython 构建中：同一解释器里通常只有一个线程能同时执行 Python 字节码。")
     print()
     print("  多线程要跑 -> 得先抢到 GIL")
     print("  抢不到     -> 只能等着")
@@ -165,10 +165,10 @@ def part4_gil():
 def part5_what_gil_protects():
     show("5. GIL 也不是纯负担")
 
-    print("它顺手保证了：单个字节码操作是「原子」的。")
+    print("不要把 GIL 当成 Python 级别的线程安全保证。某些 CPython 内置操作在特定版本里看起来是原子的，")
     print()
-    print("比如两个线程同时往列表 append，一般不会把列表搞坏，")
-    print("因为 list.append 是一次 C 调用，中间不会切线程。")
+    print("比如 list.append 在常见 CPython + GIL 构建中通常不会把列表内部结构写坏，")
+    print("但这属于实现细节，不应作为跨版本、跨解释器的同步契约。")
     print()
     print("但下面这种就不行了：")
     print("    counter += 1")
@@ -191,9 +191,8 @@ def part6_workarounds():
     print("    numpy、Pillow、lxml 这些库在算的时候会把 GIL 放掉。")
     print("    所以用 numpy 做矩阵运算时，多线程是真的有效的。")
     print()
-    print("路线三：换个解释器")
-    print("    Python 3.13 提供了实验性的 free-threaded 构建（无 GIL）。")
-    print("    生态还在跟进，暂时不建议在生产里上。")
+    print("路线三：使用 free-threaded CPython 构建（如果你的 Python 版本、依赖和部署环境都支持）")
+    print("    这会改变传统 GIL 下的线程行为；是否适合生产要按当前版本和依赖兼容性评估。")
     print()
     print("补充：IO 密集根本不用绕 —— 线程和协程就够了。")
 
@@ -210,8 +209,8 @@ def part7_how_to_judge():
     print("  算（循环/加密/图像/大数据处理） -> CPU 密集  -> 进程")
     print()
     print("实测技巧：跑一遍代码，看 CPU 占用率。")
-    print("  单个核跑满、整体 CPU 很低 -> IO 密集")
-    print("  所有核都能跑满            -> CPU 密集")
+    print("  CPU 长期很低、线程大多在等待 -> 更像 IO 密集")
+    print("  一个或多个核心长期跑满       -> 更像 CPU 密集")
     print()
     print("拿不准就用 cProfile 看时间花在哪，别凭感觉猜。")
 

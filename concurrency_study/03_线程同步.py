@@ -86,10 +86,8 @@ print(f"     实际结果: {counter:,}   （耗时 {elapsed:.2f} 秒）")
 print(f"     丢了 {lost:,} 次，错误率 {lost / widened_total * 100:.1f}%")
 
 print()
-print("为什么？counter += 1 看着是一行，字节码层面其实是三步：")
-print("    LOAD  counter    <- 读出来")
-print("    ADD   1          <- 加一")
-print("    STORE counter    <- 写回去")
+print("为什么？counter += 1 从语义上是一次 read-modify-write：先读取旧值、计算新值、再写回。")
+print("具体会编译成哪些字节码会随 Python 版本变化，不要依赖某一版的指令拆分。")
 print()
 print("线程可能在这个中间被切走：")
 print("   线程A 读到 100 -> 被切走 -> 线程B 也读到 100")
@@ -100,8 +98,8 @@ print("B 版的 sum(range(50)) 只是「放大镜」，让窗口宽到必然撞�
 print("A 版里窗口一样存在，只是窄到要靠运气才撞得到 —— 这才是它可怕的地方：")
 print("测试环境跑一万次都对，线上高峰期就出错。")
 print()
-print("教训：有 GIL 不等于线程安全。GIL 只保证「单条字节码」不被打断，")
-print("不保证「多条字节码组成的逻辑」不被打断。")
+print("教训：有 GIL 不等于线程安全。跨多个操作的 read-modify-write 逻辑仍需要同步，")
+print("而且哪些内置操作在某个 CPython 版本里恰好原子，也不应当作语言级保证。")
 
 
 # ---------------------------------------------------------------
@@ -302,7 +300,7 @@ show("7. 什么时候必须加锁")
 
 print("必须加锁：多个线程会「写」同一份数据。")
 print("  计数、累加、往同一个列表里 append（复合操作）、改字典的多个键、")
-print("  「先判断再修改」这种 read-modify-write 模式。")
+print("  「先判断再修改」这种 check-then-act / read-modify-write 模式。")
 print()
 print("不用加锁：")
 print("  只读共享数据 —— 完全不冲突")

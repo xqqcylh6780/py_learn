@@ -109,8 +109,8 @@ print("dict 是 Mapping 吗  :", isinstance({}, Mapping))
 print("str 是 Iterable 吗  :", isinstance("abc", Iterable))
 print("有 len 的都算 Sized :", isinstance({1, 2}, Sized))
 print()
-print("这些就是 collections.abc 里的抽象基类。判断「能不能 for 循环」，")
-print("用 isinstance(x, Iterable) 比用 hasattr(x, '__iter__') 更规范。")
+print("这些就是 collections.abc 里的抽象基类。注意：有些旧式对象只实现 __getitem__，")
+print("依然能被 iter()/for 遍历却未必被 isinstance(x, Iterable) 识别；真要判断可迭代，直接尝试 iter(x) 最可靠。")
 
 
 # ---------------------------------------------------------------

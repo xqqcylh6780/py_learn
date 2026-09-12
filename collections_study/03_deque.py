@@ -97,7 +97,7 @@ window = deque(maxlen=3)
 data = [10, 20, 30, 40, 50, 60]
 for x in data:
     window.append(x)
-    print(f"  新数据 {x:<3} 窗口 {list(window):<14} 平均 {sum(window) / len(window):.1f}")
+    print(f"  新数据 {x:<3} 窗口 {str(list(window)):<14} 平均 {sum(window) / len(window):.1f}")
 
 
 # ---------------------------------------------------------------

@@ -93,9 +93,9 @@ python 99_exercises.py
 | | 线程 | 进程 | 协程 |
 |---|---|---|---|
 | 类型 | 并发 | 并行 | 并发 |
-| 共享内存 | 是 | 否 | 是（但不需要锁） |
-| 需要加锁 | 是 | 否 | 否 |
-| 开销 | 中 | 高（约 60ms/个） | 极低 |
+| 共享内存 | 是 | 否（默认隔离） | 是（共享同一进程内存） |
+| 需要加锁 | 共享可变状态时需要 | 共享内存/Manager 等场景可能需要 | 共享状态跨 await 时可能需要 `asyncio.Lock` |
+| 开销 | 中 | 高（启动成本与平台有关） | 极低 |
 | 擅长 | IO 密集 | CPU 密集 | 高并发 IO |
 | 数量级 | 几百 | CPU 核数 | 几万 |
 
@@ -154,8 +154,8 @@ async def main():
     many = await asyncio.gather(f(), g())      # 并发（保序）
     task = asyncio.create_task(f())
 
-    async for x in asyncio.as_completed([f(), g()]):   # 谁先完成先处理
-        pass
+    for aw in asyncio.as_completed([f(), g()]):       # 兼容较老 Python：谁先完成先处理
+        x = await aw
 
     await asyncio.wait_for(slow(), timeout=1)  # 单任务超时
 
@@ -173,7 +173,7 @@ asyncio.run(main())
 
 ## 12 个最容易踩的坑
 
-1. **有 GIL ≠ 线程安全**。`counter += 1` 是三步，中间会被切走（03 节）。
+1. **有 GIL ≠ 线程安全**。`counter += 1` 属于 read-modify-write 逻辑，不应依赖实现细节假设它天然安全（03 节）。
 2. **用普通列表当队列**：判断、取值、删除之间会被切走，还会 O(n)（04 节）。
 3. **毒丸数量不对**：两个消费者只放一颗 `None`，另一个永远等下去（12 节坑 4）。
 4. **死锁**：多把锁的获取顺序不一致，互相等（03 节）。
